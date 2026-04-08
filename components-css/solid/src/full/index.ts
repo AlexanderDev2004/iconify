@@ -6,7 +6,7 @@ import {
 	splitProps,
 	type JSX,
 } from 'solid-js';
-import { mergeProps, spread, template } from 'solid-js/web';
+import { mergeProps, createDynamic } from 'solid-js/web';
 import type { CSSIconElementProps } from '../props.js';
 import type { IconifyIcon } from '@iconify/types';
 import { renderContent } from '@iconify/component-utils/helpers/content';
@@ -14,10 +14,6 @@ import { subscribeToIconData } from '@iconify/component-utils/icons/subscribe';
 import { cleanUpInnerHTML } from '@iconify/utils/lib/svg/inner-html';
 import { getSizeProps } from '@iconify/component-utils/helpers/size';
 import { renderCSS } from './status.js';
-
-const _tmpl$ = /* @__PURE__ */ template(
-	`<svg xmlns=http://www.w3.org/2000/svg>`
-);
 
 /**
  * Basic icon component, without fallback
@@ -79,18 +75,12 @@ export function Icon(props: CSSIconElementProps): JSX.Element {
 	);
 
 	// Render icon
-	return (() => {
-		const _el$ = _tmpl$();
-		spread(
-			_el$,
-			mergeProps(size, others, {
-				get innerHTML() {
-					return finalContent();
-				},
-			}),
-			true,
-			true
-		);
-		return _el$;
-	})();
+	return createDynamic(
+		() => 'svg',
+		mergeProps(size, others, {
+			get innerHTML() {
+				return finalContent();
+			},
+		})
+	);
 }
